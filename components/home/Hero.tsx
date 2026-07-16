@@ -4,7 +4,7 @@ import HeroPhone from "./HeroPhone";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-24">
+   <section className="relative pt-20 lg:pt-24">
 
       <HeroBackground />
 

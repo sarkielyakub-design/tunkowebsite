@@ -1,3 +1,5 @@
+import Navbar from "@/components/home/header/Navbar";
+
 import Hero from "@/components/home/Hero";
 import Statistics from "@/components/home/Statistics";
 import WhyChooseTunko from "@/components/home/WhyChooseTunko";
@@ -11,24 +13,20 @@ import ServicesSection from "@/components/home/services/ServiceSection";
 
 export default function Home() {
   return (
-    <main className="overflow-x-hidden">
-      <Hero />
+    <>
+      <Navbar />
 
-      <Statistics />
-
-      <ServicesSection />
-
-      <ExchangeSection />
-
-      <CountriesSection />
-
-      <WhyChooseTunko />
-
-      <Testimonials />
-
-      <FAQ />
-
-      <Download />
-    </main>
+      <main className="overflow-x-hidden">
+        <Hero />
+        <Statistics />
+        <ServicesSection />
+        <ExchangeSection />
+        <CountriesSection />
+        <WhyChooseTunko />
+        <Testimonials />
+        <FAQ />
+        <Download />
+      </main>
+    </>
   );
 }
