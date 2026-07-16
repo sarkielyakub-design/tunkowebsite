@@ -4,10 +4,15 @@ import { Bell, Globe, Menu, Search } from "lucide-react";
 import Image from "next/image";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import type { DashboardUser } from "@/src/api/dashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  user?: DashboardUser | null;
+}
+
+export default function DashboardHeader({ user }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
@@ -89,9 +94,15 @@ export default function DashboardHeader() {
           </Button>
 
           <Avatar className="h-11 w-11">
-
             <AvatarFallback className="bg-blue-600 font-bold text-white">
-              AS
+              {(() => {
+                if (!user) return "AS";
+
+                const first = user.first_name?.trim()?.[0] ?? "";
+                const last = user.last_name?.trim()?.[0] ?? "";
+
+                return (first + last).toUpperCase() || "AS";
+              })()}
             </AvatarFallback>
 
           </Avatar>

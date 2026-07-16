@@ -35,7 +35,7 @@ const loginSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters"),
 
-  remember: z.boolean().default(false),
+  remember: z.boolean().default(false).pipe(z.boolean()),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -49,7 +49,7 @@ export default function LoginForm() {
   register,
   handleSubmit,
   formState: { errors },
-} = useForm<LoginFormValues>({
+} = useForm({
   resolver: zodResolver(loginSchema),
 
   defaultValues: {

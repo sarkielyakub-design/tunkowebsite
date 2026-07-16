@@ -9,7 +9,7 @@ import {
   Unlock,
 } from "lucide-react";
 
-import { Wallet } from "../types";
+import { Wallet } from "../types/wallet";
 import WalletStatusBadge from "./WalletStatusBadge";
 
 interface Props {

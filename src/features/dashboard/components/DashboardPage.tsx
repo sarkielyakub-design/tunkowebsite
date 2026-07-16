@@ -65,11 +65,7 @@ export default function DashboardPage() {
 
           <div className="grid gap-6 xl:grid-cols-2">
 
-            <RecentTransactions
-              transactions={
-                dashboard.recent_transactions ?? []
-              }
-            />
+            <RecentTransactions />
 
            <ExchangeRateCard
   rates={dashboard.exchange_rates}

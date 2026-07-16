@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { getReceipt } from "@/lib/receipt";
 import { Receipt } from "@/types/receipt";
 
-import ReceiptHeader from "@/components/receipt/ReceiptHeader";
-import ReceiptStatus from "@/components/receipt/ReceiptStatus";
-import ReceiptDetails from "@/components/receipt/ReceiptDetails";
-import ReceiptQRCode from "@/components/receipt/ReceiptQRCode";
-import ReceiptActions from "@/components/receipt/ReceiptActions";
-import ReceiptSkeleton from "@/components/receipt/ReceiptSkeleton";
+import ReceiptHeader from "./ReceiptHeader";
+import ReceiptStatus from "./ReceiptStatus";
+import ReceiptDetails from "./ReceiptDetails";
+import ReceiptQRCode from "./ReceiptQRCode";
+import ReceiptActions from "./ReceiptActions";
+import ReceiptSkeleton from "./ReceiptSkeleton";
+
 interface Props {
   reference: string;
 }
@@ -20,7 +21,7 @@ export default function ReceiptCard({ reference }: Props) {
   const [loading, setLoading] =useState(true);
   const [error, setError] = useState(false);
 
-  const receiptRef = useRef<HTMLDivElement>(null);
+  const receiptRef = useRef<HTMLDivElement>(null) as React.MutableRefObject<HTMLDivElement>;
 
   useEffect(() => {
     const loadReceipt = async () => {
@@ -72,8 +73,10 @@ export default function ReceiptCard({ reference }: Props) {
 
       <ReceiptQRCode receipt={receipt} />
 
-      
-     
+      <ReceiptActions
+        receipt={receipt}
+        receiptRef={receiptRef}
+      />
     </div>
   );
 }

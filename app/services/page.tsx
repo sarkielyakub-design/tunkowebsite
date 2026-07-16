@@ -5,22 +5,14 @@ import ServiceHowItWorks from "@/components/home/services/ServiceHowItWorks";
 import ServiceFAQ from "@/components/home/services/ServiceFAQ";
 import ServiceCTA from "@/components/home/services/ServiceCTA";
 
-interface Props {
-  params: Promise<{
-    slug: string;
-  }>;
-}
-
-export default async function ServicePage({ params }: Props) {
-  const { slug } = await params;
-
+export default function ServicePage() {
   return (
     <main className="overflow-hidden">
-      <ServiceHero slug={slug} />
-      <ServiceFeatures slug={slug} />
-      <ServiceBenefits slug={slug} />
-      <ServiceHowItWorks slug={slug} />
-      <ServiceFAQ slug={slug} />
+      <ServiceHero slug={""} />
+      <ServiceFeatures />
+      <ServiceBenefits />
+      <ServiceHowItWorks />
+      <ServiceFAQ />
       <ServiceCTA />
     </main>
   );

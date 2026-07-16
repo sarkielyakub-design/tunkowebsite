@@ -32,18 +32,30 @@ interface UserData {
   is_verified: boolean;
 }
 
-export default function WalletCard() {
-  const [showBalance, setShowBalance] =
-    useState(true);
+interface WalletCardProps {
+  wallet?: WalletData | null;
+  user?: UserData | null;
+  loading?: boolean;
+}
 
-  const [loading, setLoading] =
-    useState(true);
+export default function WalletCard({
+  wallet: initialWallet,
+  user: initialUser,
+  loading: initialLoading,
+}: WalletCardProps) {
+  const [showBalance, setShowBalance] = useState(true);
 
-  const [wallet, setWallet] =
-    useState<WalletData | null>(null);
+  const [loading, setLoading] = useState(
+    initialLoading ?? (initialWallet ? false : true)
+  );
 
-  const [user, setUser] =
-    useState<UserData | null>(null);
+  const [wallet, setWallet] = useState<WalletData | null>(
+    initialWallet ?? null
+  );
+
+  const [user, setUser] = useState<UserData | null>(
+    initialUser ?? null
+  );
 
   const [open, setOpen] =
     useState(false);

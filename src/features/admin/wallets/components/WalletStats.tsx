@@ -1,6 +1,6 @@
 "use client";
 
-import { WalletSummary } from "../types";
+import { WalletSummary } from "../types/wallet";
 
 interface Props {
   summary: WalletSummary;

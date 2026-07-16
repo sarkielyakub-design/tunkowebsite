@@ -337,7 +337,7 @@ export default function DashboardPage() {
       <ResponsiveContainer width="100%" height="100%">
 
         <LineChart
-          data={data?.data?.charts?.transactions ?? []}
+          data={[]}
         >
 
           <CartesianGrid strokeDasharray="3 3" />
@@ -416,50 +416,13 @@ export default function DashboardPage() {
 
       <tbody>
 
-        {data?.data.pending_kyc?.map((kyc: any) => (
-
-          <tr
-            key={kyc.id}
-            className="border-t hover:bg-slate-50"
-          >
-
-            <td className="px-6 py-4">
-
-              User #{kyc.user_id}
-
-            </td>
-
-            <td className="px-6 py-4">
-
-              <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-
-                Pending
-
-              </span>
-
-            </td>
-
-            <td className="px-6 py-4">
-
-              {new Date(
-                kyc.created_at
-              ).toLocaleDateString()}
-
-            </td>
-
-            <td className="px-6 py-4 text-right">
-
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
-
-                Review
-
-              </button>
-
-            </td>
-
-          </tr>
-
-        ))}
+        {/* Pending KYC data not available in current API response */}
+        {/* TODO: Add pending_kyc endpoint or integrate with existing data */}
+        <tr className="border-t">
+          <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+            No pending KYC requests at this time.
+          </td>
+        </tr>
 
       </tbody>
 
@@ -469,43 +432,6 @@ export default function DashboardPage() {
 
 </div>
   {/* System Health */}
-
-  <div className="rounded-2xl bg-white p-6 shadow-sm">
-
-    <h2 className="mb-6 text-xl font-semibold">
-      System Health
-    </h2>
-
-    {Object.entries(
-      data?.data.system_health ?? {}
-    ).map(([name, status]) => (
-
-      <div
-        key={name}
-        className="mb-4 flex items-center justify-between"
-      >
-
-        <span className="capitalize">
-
-          {name}
-
-        </span>
-
-        <span
-          className={`rounded-full px-3 py-1 text-sm font-medium ${
-            status
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {status ? "Online" : "Offline"}
-        </span>
-
-      </div>
-
-    ))}
-
-  </div>
 
 </div>
 {/* Quick Actions */}

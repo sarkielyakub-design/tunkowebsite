@@ -130,7 +130,6 @@ export default function AirtimePage() {
           <AmountCard
             amount={amount}
             onChange={setAmount}
-            balance={walletBalance}
           />
 
         )}

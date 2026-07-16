@@ -10,26 +10,32 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { getDashboard, DashboardStats } from "@/src/api/dashboard";
 
+type Props = {
+  stats?: DashboardStats | null;
+};
 
-
-export default function StatsCards() {
+export default function StatsCards({ stats: initialStats }: Props) {
   const [stats, setStats] =
-    useState<DashboardStats | null>(null);
+    useState<DashboardStats | null>(initialStats ?? null);
 
   const [loading, setLoading] =
-    useState(true);
+    useState(!initialStats);
 
   useEffect(() => {
-    loadStats();
-  }, []);
+    if (!initialStats) {
+      loadStats();
+    }
+  }, [initialStats]);
 
   async function loadStats() {
     try {
-      const response =
-        await getDashboardStats();
+      setLoading(true);
 
-      if (response.success) {
+      const response = await getDashboard();
+
+      if (response && response.success) {
         setStats(response.stats);
       }
     } catch (error) {
@@ -44,9 +50,7 @@ export default function StatsCards() {
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <Card key={index} className="rounded-3xl">
-            <CardContent className="p-8">
-              Loading...
-            </CardContent>
+            <CardContent className="p-8">Loading...</CardContent>
           </Card>
         ))}
       </div>
@@ -60,17 +64,13 @@ export default function StatsCards() {
   const cards = [
     {
       title: "Total Sent",
-      value: `₦${Number(
-        stats.total_sent
-      ).toLocaleString()}`,
+      value: `₦${Number(stats.total_sent).toLocaleString()}`,
       icon: ArrowUpRight,
       color: "bg-blue-100 text-blue-600",
     },
     {
       title: "Total Received",
-      value: `₦${Number(
-        stats.total_received
-      ).toLocaleString()}`,
+      value: `₦${Number(stats.total_received).toLocaleString()}`,
       icon: ArrowDownLeft,
       color: "bg-green-100 text-green-600",
     },
@@ -90,21 +90,12 @@ export default function StatsCards() {
 
   return (
     <section>
-
       <div className="mb-5 flex items-center justify-between">
-
-        <h2 className="text-xl font-bold">
-          Statistics
-        </h2>
-
-        <span className="text-sm text-slate-500">
-          Live Data
-        </span>
-
+        <h2 className="text-xl font-bold">Statistics</h2>
+        <span className="text-sm text-slate-500">Live Data</span>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
         {cards.map((card) => {
           const Icon = card.icon;
 
@@ -114,33 +105,19 @@ export default function StatsCards() {
               className="rounded-3xl border-0 shadow-md transition hover:shadow-xl"
             >
               <CardContent className="flex items-center justify-between p-6">
-
                 <div>
-
-                  <p className="text-sm text-slate-500">
-                    {card.title}
-                  </p>
-
-                  <h3 className="mt-2 text-3xl font-bold">
-                    {card.value}
-                  </h3>
-
+                  <p className="text-sm text-slate-500">{card.title}</p>
+                  <h3 className="mt-2 text-3xl font-bold">{card.value}</h3>
                 </div>
 
-                <div
-                  className={`rounded-2xl p-4 ${card.color}`}
-                >
+                <div className={`rounded-2xl p-4 ${card.color}`}>
                   <Icon className="h-7 w-7" />
                 </div>
-
               </CardContent>
-
             </Card>
           );
         })}
-
       </div>
-
     </section>
   );
 }

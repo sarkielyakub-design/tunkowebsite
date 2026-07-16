@@ -167,8 +167,6 @@ export function useData() {
       setLoading(true);
 
       const response = await purchaseData({
-        country_id: selectedCountry?.id,
-        network_id: selectedNetwork?.id,
         bundle_id: selectedBundle.id,
         phone,
         pin,

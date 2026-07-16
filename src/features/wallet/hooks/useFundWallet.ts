@@ -6,7 +6,7 @@ import { initializeDeposit } from "@/src/api/wallet";
 
 export function useFundWallet() {
 
-  async function fundWallet(amount: number) {
+  async function fundWallet(amount: number, paymentMethod: string) {
 
     try {
 

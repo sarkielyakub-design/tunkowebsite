@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/src/store/admin-auth-store";
+import { useAuthStore } from "@/src/store/admin/auth-store";
 
 interface Props {
   permission: string;
@@ -12,7 +12,7 @@ export default function Can({
   children,
 }: Props) {
   const admin = useAuthStore(
-    (state) => state.admin
+    (state: any) => state.admin
   );
 
   if (!admin) return null;

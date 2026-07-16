@@ -19,6 +19,10 @@ function money(
 export default function WalletInfoCard({
   wallet,
 }: Props) {
+  const active =
+    wallet.is_active ||
+    wallet.status === "active";
+
   return (
     <div className="rounded-2xl border bg-white">
 
@@ -98,7 +102,7 @@ export default function WalletInfoCard({
 
           <div className="mt-2">
             <WalletStatusBadge
-              status={wallet.status}
+              active={active}
             />
           </div>
 

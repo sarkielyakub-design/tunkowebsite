@@ -145,10 +145,6 @@ export default function AdminSidebar() {
               href={menu.href}
               label={menu.label}
               icon={menu.icon}
-              active={
-                pathname === menu.href ||
-                pathname.startsWith(`${menu.href}/`)
-              }
             />
           ))}
         </nav>

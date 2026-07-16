@@ -34,10 +34,10 @@ export default function HeaderTheme() {
       "
       aria-label="Toggle Theme"
     >
-      {theme === "dark" ? (
-        <Sun className="h-5 w-5 text-yellow-500" />
-      ) : (
+      {theme === "light" ? (
         <Moon className="h-5 w-5 text-slate-600" />
+      ) : (
+        <Sun className="h-5 w-5 text-yellow-500" />
       )}
     </button>
   );

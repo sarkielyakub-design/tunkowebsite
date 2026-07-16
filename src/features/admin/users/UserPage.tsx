@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import UserStats from "./components/UserStatistics";
 import UserFilters from "./components/UserFilters";
 import UserTable from "./components/UserTable";
 
 export default function UsersPage() {
+  const [search, setSearch] = useState("");
+  const [users, setUsers] = useState<any[]>([]);
+
   return (
     <div className="space-y-8">
 
@@ -24,11 +28,11 @@ export default function UsersPage() {
 
       </div>
 
-      <UserStats />
+      <UserStats statistics={{ total: 0, active: 0, verified: 0, frozen: 0, today: 0 }} />
 
-      <UserFilters />
+      <UserFilters search={search} onSearch={setSearch} />
 
-      <UserTable />
+      <UserTable users={users} />
 
     </div>
   );

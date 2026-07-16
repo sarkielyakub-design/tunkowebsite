@@ -17,7 +17,7 @@ export default function UsersPage() {
     isLoading,
   } = useUsers({
     search,
-  });
+  }) as { data?: { statistics: any; data: any[] }; isLoading: boolean };
 
   return (
     <div className="space-y-6">

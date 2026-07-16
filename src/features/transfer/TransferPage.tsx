@@ -98,10 +98,7 @@ export default function TransferPage() {
 
         {/* Search Recipient */}
         {!recipient && (
-          <RecipientSearch
-            loading={loading}
-            onSearch={findRecipient}
-          />
+          <RecipientSearch onFound={(foundRecipient) => findRecipient(foundRecipient.wallet_number)} />
         )}
 
         {/* Recipient Details */}
@@ -126,8 +123,6 @@ export default function TransferPage() {
           <FeeCard
             amount={amountValue}
             fee={fee}
-            recipientGets={amountValue}
-            totalDebit={amountValue + fee}
           />
         )}
 
