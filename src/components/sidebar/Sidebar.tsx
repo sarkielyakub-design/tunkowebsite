@@ -106,7 +106,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex h-screen w-72 flex-col bg-slate-900">
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-72 flex-col bg-slate-900 lg:flex">
 
       {/* Logo */}
       <div className="flex h-20 items-center gap-3 border-b border-slate-800 px-6">
