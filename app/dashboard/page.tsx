@@ -1,5 +1,21 @@
-import DashboardPage from "@/src/features/dashboard/components/DashboardPage";
+"use client";
 
-export default function Page() {
-  return <DashboardPage />;
+import { useDashboard } from "@/src/hooks/useDashboard";
+
+export default function DashboardPage() {
+  const { data, isLoading } = useDashboard();
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <>
+      {/* Wallet Card */}
+      {/* Quick Actions */}
+      {/* Exchange Rates */}
+      {/* Recent Transactions */}
+      {/* Recent Transfers */}
+    </>
+  );
 }
