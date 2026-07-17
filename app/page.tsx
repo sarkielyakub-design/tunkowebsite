@@ -18,13 +18,21 @@ export default function Home() {
 
       <main className="overflow-x-hidden">
         <Hero />
+
         <Statistics />
+
         <ServicesSection />
+
         <ExchangeSection />
+
         <CountriesSection />
+
         <WhyChooseTunko />
+
         <Testimonials />
+
         <FAQ />
+
         <Download />
       </main>
     </>
