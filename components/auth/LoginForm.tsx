@@ -188,20 +188,13 @@ export default function LoginForm() {
 
             </div>
 
-            <Button
-              disabled={loading}
-              className="h-12 w-full rounded-xl text-base"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-
-                  Signing In...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
+            <button
+  type="submit"
+  disabled={loading}
+  className="h-12 w-full rounded-xl bg-black text-white"
+>
+  {loading ? "Signing In..." : "Sign In"}
+</button>
 
           </form>
 
