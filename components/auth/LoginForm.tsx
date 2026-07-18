@@ -59,41 +59,62 @@ export default function LoginForm() {
   },
 });
 
-  const onSubmit = async (data: LoginFormValues) => {
+ const onSubmit = async (data: LoginFormValues) => {
+
+    console.log("========== LOGIN START ==========");
+    console.log("Form Data:", data);
+
     try {
-      setLoading(true);
 
-      const response = await login({
-        login: data.login,
-        password: data.password,
-        device_name: "Tunko Web",
-      });
+        setLoading(true);
 
-Cookies.set(
-    "token",
-    response.token,
-    {
-        expires: data.remember
-            ? 30
-            : 1,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-    }
-);
+        console.log("Calling login API...");
 
-      toast.success(response.message);
+        const response = await login({
+            login: data.login,
+            password: data.password,
+            device_name: "Tunko Web",
+        });
 
-      router.push("/dashboard");
+        console.log("API Response:", response);
+
+        Cookies.set("token", response.token, {
+            expires: data.remember ? 30 : 1,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+
+        console.log("Token Saved");
+
+        toast.success(response.message);
+
+        console.log("Redirecting to Dashboard...");
+
+        router.push("/dashboard");
+
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ??
-          "Unable to login."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
+        console.error("LOGIN ERROR");
+        console.error(error);
+
+        if (error.response) {
+            console.error("Status:", error.response.status);
+            console.error("Response:", error.response.data);
+        }
+
+        toast.error(
+            error?.response?.data?.message ??
+            error?.message ??
+            "Unable to login."
+        );
+
+    } finally {
+
+        console.log("========== LOGIN END ==========");
+
+        setLoading(false);
+    }
+};
   return (
     <section className="flex items-center justify-center p-6 lg:p-20">
 
