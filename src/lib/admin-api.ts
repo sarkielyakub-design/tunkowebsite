@@ -6,9 +6,14 @@ import axios, {
 import Cookies from "js-cookie";
 
 const adminApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL:
+    process.env.NEXT_PUBLIC_ADMIN_API_URL ||
+    "https://api.tunkomoney.com/api",
+
   timeout: 60000,
+
   withCredentials: false,
+
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -24,7 +29,6 @@ adminApi.interceptors.request.use(
     const token = Cookies.get("admin_token");
 
     if (token) {
-      // Axios v1 compatible way
       config.headers.set(
         "Authorization",
         `Bearer ${token}`
@@ -33,9 +37,7 @@ adminApi.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // ============================================================
@@ -43,9 +45,7 @@ adminApi.interceptors.request.use(
 // ============================================================
 
 adminApi.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
+  (response: AxiosResponse) => response,
 
   (error: AxiosError) => {
     const status = error.response?.status;
