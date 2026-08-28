@@ -1,30 +1,26 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
-import Cookies from "js-cookie";
+import axios from "axios";
 
 const adminApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL:
+    process.env.NEXT_PUBLIC_ADMIN_API_URL ||
+    "https://api.tunkomoney.com/api",
+
   timeout: 60000,
-  withCredentials: false,
+
   headers: {
-    Accept: "application/json",
     "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
-/**
- * Request Interceptor
- */
 adminApi.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("admin_token");
 
-    const token = Cookies.get("admin_token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
@@ -32,49 +28,14 @@ adminApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/**
- * Response Interceptor
- */
 adminApi.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response) => response,
 
-  (error: AxiosError<any>) => {
-
-    switch (error.response?.status) {
-
-      case 401:
-
-        Cookies.remove("admin_token");
-
-        if (typeof window !== "undefined") {
-          window.location.href = "/admin/login";
-        }
-
-        break;
-
-      case 403:
-
-        console.error("Permission denied.");
-
-        break;
-
-      case 404:
-
-        console.error("Resource not found.");
-
-        break;
-
-      case 422:
-
-        console.error(error.response?.data);
-
-        break;
-
-      case 500:
-
-        console.error("Internal server error.");
-
-        break;
+  (error) => {
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("admin_token");
+      }
     }
 
     return Promise.reject(error);
