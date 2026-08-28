@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import {
   ChevronDown,
-  User,
   Settings,
   KeyRound,
   LogOut,
@@ -26,26 +25,38 @@ export default function UserMenu() {
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
 
-    return () =>
+    return () => {
       document.removeEventListener(
         "mousedown",
         handleClickOutside
       );
+    };
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    <div
+      className="relative"
+      ref={ref}
+    >
       {/* Trigger */}
 
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 rounded-xl border bg-white px-3 py-2 hover:bg-gray-50"
+        type="button"
+        onClick={() => setOpen((previous) => !previous)}
+        className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 transition hover:bg-gray-50"
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white font-semibold">
+        {/* Avatar */}
+
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white">
           A
         </div>
+
+        {/* Admin Information */}
 
         <div className="hidden text-left lg:block">
           <p className="text-sm font-semibold">
@@ -57,9 +68,11 @@ export default function UserMenu() {
           </p>
         </div>
 
+        {/* Arrow */}
+
         <ChevronDown
           size={18}
-          className={`transition-transform ${
+          className={`transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -68,43 +81,65 @@ export default function UserMenu() {
       {/* Dropdown */}
 
       {open && (
-        <div className="absolute right-0 mt-2 w-64 rounded-xl border bg-white shadow-xl overflow-hidden z-50">
+        <div className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
 
-          <div className="border-b p-4">
+          {/* Admin Information */}
 
-            <p className="font-semibold">
+          <div className="border-b border-gray-100 p-4">
+            <p className="font-semibold text-gray-900">
               Administrator
             </p>
 
             <p className="text-sm text-gray-500">
               admin@tunko.com
             </p>
-
           </div>
+
+          {/* Settings */}
 
           <Link
             href="/admin/settings"
-            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 transition hover:bg-gray-50"
           >
             <Settings size={18} />
-            Settings
+
+            <span>
+              Settings
+            </span>
           </Link>
+
+          {/* Change Password */}
 
           <Link
             href="/admin/change-password"
-            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 transition hover:bg-gray-50"
           >
             <KeyRound size={18} />
-            Change Password
+
+            <span>
+              Change Password
+            </span>
           </Link>
 
+          {/* Logout */}
+
           <button
-            className="flex w-full items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50"
+            type="button"
+            onClick={() => {
+              setOpen(false);
+
+              // Logout logic will be connected here.
+            }}
+            className="flex w-full items-center gap-3 border-t border-gray-100 px-4 py-3 text-red-600 transition hover:bg-red-50"
           >
             <LogOut size={18} />
-            Logout
-          </button>
 
+            <span>
+              Logout
+            </span>
+          </button>
         </div>
       )}
     </div>
