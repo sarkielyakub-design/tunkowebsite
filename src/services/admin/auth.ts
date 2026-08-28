@@ -60,16 +60,7 @@ export const logout = async (): Promise<void> => {
   }
 };
 
-/**
- * Current Admin Profile
- */
-export const me = async (): Promise<AdminProfileResponse> => {
-  const { data } = await adminApi.get<AdminProfileResponse>(
-    "/admin/profile"
-  );
 
-  return data;
-};
 
 /**
  * Forgot Password
