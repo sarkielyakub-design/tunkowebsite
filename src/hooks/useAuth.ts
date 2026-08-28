@@ -1,27 +1,34 @@
-"use client";
+import { useMutation } from "@tanstack/react-query";
+import * as AuthService from "@/src/services/admin/auth";
 
-import { useEffect } from "react";
-import { me } from "@/src/api/auth";
-import { useAuthStore } from "@/src/store/customer/authStore";
+/**
+ * Admin Login
+ */
+export const useLogin = () =>
+  useMutation({
+    mutationFn: AuthService.login,
+  });
 
-export default function useAuth() {
-  const { user, setUser } = useAuthStore();
+/**
+ * Admin Logout
+ */
+export const useLogout = () =>
+  useMutation({
+    mutationFn: AuthService.logout,
+  });
 
-  useEffect(() => {
-    if (user) return;
+/**
+ * Forgot Admin Password
+ */
+export const useForgotPassword = () =>
+  useMutation({
+    mutationFn: AuthService.forgotPassword,
+  });
 
-    async function loadUser() {
-      try {
-        const response = await me();
-
-        setUser(response.user);
-      } catch {
-        // Not authenticated
-      }
-    }
-
-    loadUser();
-  }, [user, setUser]);
-
-  return user;
-}
+/**
+ * Reset Admin Password
+ */
+export const useResetPassword = () =>
+  useMutation({
+    mutationFn: AuthService.resetPassword,
+  });

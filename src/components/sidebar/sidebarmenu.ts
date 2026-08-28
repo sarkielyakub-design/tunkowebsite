@@ -153,9 +153,5 @@ export const sidebarMenu: SidebarMenuItem[] = [
     icon: Settings,
   },
 
-  {
-    title: "Profile",
-    href: "/admin/profile",
-    icon: UserCog,
-  },
+ 
 ];

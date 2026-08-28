@@ -30,12 +30,7 @@ class AdminAuthService {
     Cookies.remove("admin_name");
   }
 
-  async profile() {
-    const response = await adminApi.get("/admin/profile");
-
-    return response.data.data;
-  }
-
+  
   isLoggedIn() {
     return !!Cookies.get("admin_token");
   }
