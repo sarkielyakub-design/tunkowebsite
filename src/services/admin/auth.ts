@@ -43,8 +43,19 @@ export const login = async (
 
   Cookies.set("admin_token", data.token, {
     expires: 7,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
+    path: "/",
   });
+
+  if (data.admin) {
+    Cookies.set("admin_name", JSON.stringify(data.admin), {
+      expires: 7,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    });
+  }
 
   return data;
 };
@@ -56,11 +67,38 @@ export const logout = async (): Promise<void> => {
   try {
     await adminApi.post("/admin/logout");
   } finally {
-    Cookies.remove("admin_token");
+    Cookies.remove("admin_token", {
+      path: "/",
+    });
+
+    Cookies.remove("admin_name", {
+      path: "/",
+    });
   }
 };
 
+/**
+ * Current authenticated admin
+ *
+ * IMPORTANT:
+ * This is used to verify the admin token.
+ * It is NOT a Profile menu/page.
+ */
+export const profile = async (): Promise<Admin> => {
+  const { data } =
+    await adminApi.get<AdminProfileResponse>(
+      "/admin/profile"
+    );
 
+  return data.data;
+};
+
+/**
+ * Check whether an admin token exists
+ */
+export const isLoggedIn = (): boolean => {
+  return Boolean(Cookies.get("admin_token"));
+};
 
 /**
  * Forgot Password

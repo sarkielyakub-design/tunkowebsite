@@ -6,67 +6,103 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface AdminLoginResponse {
+  success: boolean;
+  token: string;
+  admin: {
+    id: number;
+    name: string;
+    email: string;
+    phone?: string;
+    avatar?: string | null;
+    status?: boolean;
+  };
+}
+
 class AdminAuthService {
-  /**
-   * Admin Login
-   */
-  async login(data: LoginPayload) {
-    const response = await adminApi.post("/admin/login", data);
+  // ============================================================
+  // LOGIN
+  // ============================================================
+
+  async login(data: LoginPayload): Promise<AdminLoginResponse> {
+    const response = await adminApi.post<AdminLoginResponse>(
+      "/admin/login",
+      data
+    );
 
     const { token, admin } = response.data;
 
     if (!token) {
-      throw new Error("Admin login succeeded but no token was returned.");
+      throw new Error("Login succeeded but no authentication token was returned.");
     }
 
     Cookies.set("admin_token", token, {
       expires: 7,
-      secure: process.env.NODE_ENV === "production",
+      secure: window.location.protocol === "https:",
       sameSite: "strict",
+      path: "/",
     });
 
     if (admin?.name) {
       Cookies.set("admin_name", admin.name, {
         expires: 7,
-        secure: process.env.NODE_ENV === "production",
+        secure: window.location.protocol === "https:",
         sameSite: "strict",
+        path: "/",
       });
     }
 
     return response.data;
   }
 
-  /**
-   * Admin Logout
-   */
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
   async logout() {
     try {
       await adminApi.post("/admin/logout");
     } finally {
-      Cookies.remove("admin_token");
-      Cookies.remove("admin_name");
+      Cookies.remove("admin_token", {
+        path: "/",
+      });
+
+      Cookies.remove("admin_name", {
+        path: "/",
+      });
     }
   }
 
-  /**
-   * Check whether an admin token exists
-   */
+  // ============================================================
+  // CURRENT ADMIN PROFILE
+  // ============================================================
+
+  async profile() {
+    const response = await adminApi.get("/admin/profile");
+
+    return response.data.data;
+  }
+
+  // ============================================================
+  // LOCAL AUTH CHECK
+  // ============================================================
+
   isLoggedIn() {
     return Boolean(Cookies.get("admin_token"));
   }
 
-  /**
-   * Get saved admin token
-   */
-  getToken() {
-    return Cookies.get("admin_token") ?? null;
-  }
+  // ============================================================
+  // CLEAR SESSION
+  // ============================================================
 
-  /**
-   * Get saved admin name
-   */
-  getAdminName() {
-    return Cookies.get("admin_name") ?? null;
+  clearSession() {
+    Cookies.remove("admin_token", {
+      path: "/",
+    });
+
+    Cookies.remove("admin_name", {
+      path: "/",
+    });
   }
 }
 

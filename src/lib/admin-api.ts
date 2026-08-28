@@ -15,66 +15,80 @@ const adminApi = axios.create({
   },
 });
 
-/**
- * Request Interceptor
- */
+// ============================================================
+// REQUEST INTERCEPTOR
+// ============================================================
+
 adminApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-
     const token = Cookies.get("admin_token");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Axios v1 compatible way
+      config.headers.set(
+        "Authorization",
+        `Bearer ${token}`
+      );
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-/**
- * Response Interceptor
- */
+// ============================================================
+// RESPONSE INTERCEPTOR
+// ============================================================
+
 adminApi.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    return response;
+  },
 
-  (error: AxiosError<any>) => {
+  (error: AxiosError) => {
+    const status = error.response?.status;
 
-    switch (error.response?.status) {
+    if (status === 401) {
+      console.error(
+        "Admin API authentication failed:",
+        error.config?.url
+      );
 
-      case 401:
+      Cookies.remove("admin_token", {
+        path: "/",
+      });
 
-        Cookies.remove("admin_token");
+      Cookies.remove("admin_name", {
+        path: "/",
+      });
 
-        if (typeof window !== "undefined") {
-          window.location.href = "/admin/login";
-        }
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== "/admin/login"
+      ) {
+        window.location.href = "/admin/login";
+      }
+    }
 
-        break;
+    if (status === 403) {
+      console.error("Admin API permission denied.");
+    }
 
-      case 403:
+    if (status === 404) {
+      console.error("Admin API resource not found.");
+    }
 
-        console.error("Permission denied.");
+    if (status === 422) {
+      console.error(
+        "Admin API validation error:",
+        error.response?.data
+      );
+    }
 
-        break;
-
-      case 404:
-
-        console.error("Resource not found.");
-
-        break;
-
-      case 422:
-
-        console.error(error.response?.data);
-
-        break;
-
-      case 500:
-
-        console.error("Internal server error.");
-
-        break;
+    if (status === 500) {
+      console.error("Admin API internal server error.");
     }
 
     return Promise.reject(error);

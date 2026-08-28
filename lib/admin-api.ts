@@ -1,26 +1,33 @@
-import axios from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
+import Cookies from "js-cookie";
 
 const adminApi = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_ADMIN_API_URL ||
-    "https://api.tunkomoney.com/api",
-
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 60000,
-
+  withCredentials: false,
   headers: {
-    "Content-Type": "application/json",
     Accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
-adminApi.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("admin_token");
+// ============================================================
+// REQUEST INTERCEPTOR
+// ============================================================
 
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+adminApi.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = Cookies.get("admin_token");
+
+    if (token) {
+      config.headers.set(
+        "Authorization",
+        `Bearer ${token}`
+      );
     }
 
     return config;
@@ -28,14 +35,55 @@ adminApi.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-adminApi.interceptors.response.use(
-  (response) => response,
+// ============================================================
+// RESPONSE INTERCEPTOR
+// ============================================================
 
-  (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("admin_token");
+adminApi.interceptors.response.use(
+  (response: AxiosResponse) => response,
+
+  (error: AxiosError) => {
+    const status = error.response?.status;
+
+    if (status === 401) {
+      console.error(
+        "Admin API authentication failed:",
+        error.config?.url
+      );
+
+      Cookies.remove("admin_token", {
+        path: "/",
+      });
+
+      Cookies.remove("admin_name", {
+        path: "/",
+      });
+
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== "/admin/login"
+      ) {
+        window.location.href = "/admin/login";
       }
+    }
+
+    if (status === 403) {
+      console.error("Admin API permission denied.");
+    }
+
+    if (status === 404) {
+      console.error("Admin API resource not found.");
+    }
+
+    if (status === 422) {
+      console.error(
+        "Admin API validation error:",
+        error.response?.data
+      );
+    }
+
+    if (status === 500) {
+      console.error("Admin API internal server error.");
     }
 
     return Promise.reject(error);
