@@ -83,14 +83,6 @@ export default function UserMenu() {
           </div>
 
           <Link
-            href="/admin/profile"
-            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-          >
-            <User size={18} />
-            Profile
-          </Link>
-
-          <Link
             href="/admin/settings"
             className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
           >
