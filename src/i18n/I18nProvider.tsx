@@ -1,0 +1,260 @@
+"use client";
+
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+type Locale = "en" | "fr" | "ar";
+
+const translations: Record<Locale, Record<string, string>> = {
+  en: {},
+  fr: {
+    "Dashboard": "Tableau de bord",
+    "KYC Verification": "Vérification KYC",
+    "Administrators": "Administrateurs",
+    "Users": "Utilisateurs",
+    "Wallets": "Portefeuilles",
+    "Wallet Balance": "Solde du portefeuille",
+    "Transactions": "Transactions",
+    "Transfers": "Transferts",
+    "Deposits": "Dépôts",
+    "Withdrawals": "Retraits",
+    "Airtime": "Crédit téléphonique",
+    "Data": "Données",
+    "Pending KYC": "KYC en attente",
+    "Countries": "Pays",
+    "Networks": "Réseaux",
+    "Offices": "Bureaux",
+    "Exchange Rates": "Taux de change",
+    "Settings": "Paramètres",
+    "Admins": "Administrateurs",
+    "Profile": "Profil",
+    "Vouchers": "Bons",
+    "Admin Wallet": "Portefeuille administrateur",
+    "Audit Logs": "Journaux d’audit",
+    "Roles & Permissions": "Rôles et autorisations",
+    "Reports": "Rapports",
+    "Data Bundles": "Forfaits de données",
+    "Management": "Gestion",
+    "Money Transfer": "Transfert d’argent",
+    "Verification": "Vérification",
+    "Configuration": "Configuration",
+    "Security": "Sécurité",
+    "Administration Panel": "Panneau d’administration",
+    "Tunko Admin": "Tunko Admin",
+    "Refresh": "Actualiser",
+    "Today": "Aujourd’hui",
+    "View All": "Voir tout",
+    "Recent Transactions": "Transactions récentes",
+    "Latest transactions across the platform.": "Dernières transactions sur la plateforme.",
+    "Recent Users": "Utilisateurs récents",
+    "Latest registered users.": "Derniers utilisateurs inscrits.",
+    "Weekly Transactions": "Transactions hebdomadaires",
+    "Last 7 days activity": "Activité des 7 derniers jours",
+    "Users waiting for verification": "Utilisateurs en attente de vérification",
+    "No pending KYC requests at this time.": "Aucune demande KYC en attente pour le moment.",
+    "Quick Actions": "Actions rapides",
+    "Manage registered users": "Gérer les utilisateurs enregistrés",
+    "View wallet balances": "Voir les soldes des portefeuilles",
+    "Review money transfers": "Examiner les transferts d’argent",
+    "View analytics & reports": "Voir les analyses et rapports",
+    "Welcome back. Here's what's happening in Tunko today.": "Bon retour. Voici ce qui se passe aujourd’hui sur Tunko.",
+    "Active": "Actif",
+    "Inactive": "Inactif",
+    "Completed": "Terminé",
+    "Pending": "En attente",
+    "Failed": "Échoué",
+    "Logout": "Déconnexion",
+    "Status": "Statut",
+    "Date": "Date",
+    "Amount": "Montant",
+    "Type": "Type",
+    "No data available.": "Aucune donnée disponible.",
+    "Manage physical airtime and data vouchers.": "Gérer les bons physiques de crédit et de données.",
+    "Add Voucher": "Ajouter un bon",
+    "Voucher added successfully.": "Bon ajouté avec succès.",
+    "Unable to add voucher.": "Impossible d’ajouter le bon.",
+    "Voucher deleted successfully.": "Bon supprimé avec succès.",
+    "Unable to delete voucher.": "Impossible de supprimer le bon.",
+    "Voucher cancelled successfully.": "Bon annulé avec succès.",
+    "Unable to cancel voucher.": "Impossible d’annuler le bon.",
+    "Search reference, network or product": "Rechercher une référence, un réseau ou un produit",
+    "All Types": "Tous les types",
+    "All Countries": "Tous les pays",
+    "All Statuses": "Tous les statuts",
+    "Available": "Disponible",
+    "Sold": "Vendu",
+    "Cancelled": "Annulé",
+    "Reference": "Référence",
+    "Country": "Pays",
+    "Network": "Réseau",
+    "Product": "Produit",
+    "Created": "Créé",
+    "Actions": "Actions",
+    "Loading...": "Chargement...",
+    "No vouchers found.": "Aucun bon trouvé.",
+    "View": "Voir",
+    "Cancel": "Annuler",
+    "Delete": "Supprimer",
+    "Delete this voucher?": "Supprimer ce bon ?",
+    "Country Code": "Code pays",
+    "Network Name": "Nom du réseau",
+    "Product Name": "Nom du produit",
+    "Currency": "Devise",
+    "PIN": "PIN",
+    "Provider": "Fournisseur",
+    "Provider Reference": "Référence fournisseur",
+    "Expires At": "Expire le",
+    "Optional; generated automatically": "Facultatif ; généré automatiquement",
+    "Remark": "Remarque",
+    "Saving...": "Enregistrement...",
+    "Save Voucher": "Enregistrer le bon",
+    "Voucher Details": "Détails du bon",
+  },
+  ar: {
+    "Dashboard": "لوحة التحكم",
+    "KYC Verification": "التحقق من KYC",
+    "Administrators": "المشرفون",
+    "Users": "المستخدمون",
+    "Wallets": "المحافظ",
+    "Wallet Balance": "رصيد المحفظة",
+    "Transactions": "المعاملات",
+    "Transfers": "التحويلات",
+    "Deposits": "الإيداعات",
+    "Withdrawals": "السحوبات",
+    "Airtime": "الرصيد الهاتفي",
+    "Data": "البيانات",
+    "Pending KYC": "طلبات اعرف عميلك المعلقة",
+    "Countries": "الدول",
+    "Networks": "الشبكات",
+    "Offices": "المكاتب",
+    "Exchange Rates": "أسعار الصرف",
+    "Settings": "الإعدادات",
+    "Admins": "المشرفون",
+    "Profile": "الملف الشخصي",
+    "Vouchers": "القسائم",
+    "Admin Wallet": "محفظة المشرف",
+    "Audit Logs": "سجلات التدقيق",
+    "Roles & Permissions": "الأدوار والصلاحيات",
+    "Reports": "التقارير",
+    "Data Bundles": "باقات البيانات",
+    "Management": "الإدارة",
+    "Money Transfer": "تحويل الأموال",
+    "Verification": "التحقق",
+    "Configuration": "الإعدادات العامة",
+    "Security": "الأمان",
+    "Administration Panel": "لوحة الإدارة",
+    "Tunko Admin": "إدارة تونكو",
+    "Refresh": "تحديث",
+    "Today": "اليوم",
+    "View All": "عرض الكل",
+    "Recent Transactions": "المعاملات الأخيرة",
+    "Latest transactions across the platform.": "أحدث المعاملات عبر المنصة.",
+    "Recent Users": "المستخدمون الجدد",
+    "Latest registered users.": "أحدث المستخدمين المسجلين.",
+    "Weekly Transactions": "المعاملات الأسبوعية",
+    "Last 7 days activity": "نشاط آخر 7 أيام",
+    "Users waiting for verification": "المستخدمون الذين ينتظرون التحقق",
+    "No pending KYC requests at this time.": "لا توجد طلبات KYC معلقة حاليًا.",
+    "Quick Actions": "إجراءات سريعة",
+    "Manage registered users": "إدارة المستخدمين المسجلين",
+    "View wallet balances": "عرض أرصدة المحافظ",
+    "Review money transfers": "مراجعة تحويلات الأموال",
+    "View analytics & reports": "عرض التحليلات والتقارير",
+    "Welcome back. Here's what's happening in Tunko today.": "مرحبًا بعودتك. إليك ما يحدث في تونكو اليوم.",
+    "Active": "نشط",
+    "Inactive": "غير نشط",
+    "Completed": "مكتمل",
+    "Pending": "معلق",
+    "Failed": "فشل",
+    "Logout": "تسجيل الخروج",
+    "Status": "الحالة",
+    "Date": "التاريخ",
+    "Amount": "المبلغ",
+    "Type": "النوع",
+    "No data available.": "لا توجد بيانات متاحة.",
+    "Manage physical airtime and data vouchers.": "إدارة قسائم الرصيد والبيانات الفعلية.",
+    "Add Voucher": "إضافة قسيمة",
+    "Voucher added successfully.": "تمت إضافة القسيمة بنجاح.",
+    "Unable to add voucher.": "تعذر إضافة القسيمة.",
+    "Voucher deleted successfully.": "تم حذف القسيمة بنجاح.",
+    "Unable to delete voucher.": "تعذر حذف القسيمة.",
+    "Voucher cancelled successfully.": "تم إلغاء القسيمة بنجاح.",
+    "Unable to cancel voucher.": "تعذر إلغاء القسيمة.",
+    "Search reference, network or product": "البحث بالمرجع أو الشبكة أو المنتج",
+    "All Types": "كل الأنواع",
+    "All Countries": "كل الدول",
+    "All Statuses": "كل الحالات",
+    "Available": "متاحة",
+    "Sold": "مباعة",
+    "Cancelled": "ملغاة",
+    "Reference": "المرجع",
+    "Country": "الدولة",
+    "Network": "الشبكة",
+    "Product": "المنتج",
+    "Created": "تاريخ الإنشاء",
+    "Actions": "الإجراءات",
+    "Loading...": "جارٍ التحميل...",
+    "No vouchers found.": "لم يتم العثور على قسائم.",
+    "View": "عرض",
+    "Cancel": "إلغاء",
+    "Delete": "حذف",
+    "Delete this voucher?": "هل تريد حذف هذه القسيمة؟",
+    "Country Code": "رمز الدولة",
+    "Network Name": "اسم الشبكة",
+    "Product Name": "اسم المنتج",
+    "Currency": "العملة",
+    "PIN": "الرقم السري",
+    "Provider": "المزوّد",
+    "Provider Reference": "مرجع المزوّد",
+    "Expires At": "تاريخ الانتهاء",
+    "Optional; generated automatically": "اختياري؛ يتم إنشاؤه تلقائيًا",
+    "Remark": "ملاحظة",
+    "Saving...": "جارٍ الحفظ...",
+    "Save Voucher": "حفظ القسيمة",
+    "Voucher Details": "تفاصيل القسيمة",
+  },
+};
+
+interface I18nContextValue {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  t: (key: string) => string;
+  isRTL: boolean;
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>("en");
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("tunko_locale") as Locale | null;
+    if (saved === "en" || saved === "fr" || saved === "ar") setLocaleState(saved);
+  }, []);
+
+  const setLocale = (next: Locale) => {
+    setLocaleState(next);
+    window.localStorage.setItem("tunko_locale", next);
+  };
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  }, [locale]);
+
+  const value = useMemo<I18nContextValue>(() => ({
+    locale,
+    setLocale,
+    isRTL: locale === "ar",
+    t: (key: string) => translations[locale][key] ?? key,
+  }), [locale]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (!context) throw new Error("useI18n must be used inside I18nProvider");
+  return context;
+}
+
+export type { Locale };
