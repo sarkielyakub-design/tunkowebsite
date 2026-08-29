@@ -6,9 +6,14 @@ import axios, {
 import Cookies from "js-cookie";
 
 const adminApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL:
+    process.env.NEXT_PUBLIC_ADMIN_API_URL ||
+    "https://api.tunkomoney.com/api",
+
   timeout: 60000,
+
   withCredentials: false,
+
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -72,7 +77,7 @@ adminApi.interceptors.response.use(
     }
 
     if (status === 404) {
-      console.error("Admin API resource not found.");
+      console.error("Admin API resource not found:", error.config?.url);
     }
 
     if (status === 422) {
