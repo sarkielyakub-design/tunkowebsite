@@ -77,21 +77,8 @@ const menus = [
     href: "/admin/vouchers",
     icon: Package,
   },
-  {
-    title: "Admin Wallet",
-    href: "/admin/admin-wallet",
-    icon: Wallet,
-  },
-  {
-    title: "Audit Logs",
-    href: "/admin/audit-logs",
-    icon: FileText,
-  },
-  {
-    title: "Reports",
-    href: "/admin/reports",
-    icon: BarChart3,
-  },
+
+
 ];
 
 export default function AdminSidebar({

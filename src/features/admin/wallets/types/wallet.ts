@@ -1,17 +1,30 @@
 export interface WalletUser {
   id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
+  name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  country?: string | null;
+  is_verified?: boolean;
+  is_active?: boolean;
 }
 
 export interface Wallet {
   id: number;
   wallet_number: string;
-  balance: number;
   currency: string;
+
+  balance: number;
+  available_balance: number;
+  locked_balance: number;
+  pending_balance: number;
+
   is_active: boolean;
+  is_frozen: boolean;
+  freeze_reason?: string | null;
+
+  transactions_count?: number;
 
   user: WalletUser;
 
@@ -22,7 +35,7 @@ export interface Wallet {
 export interface WalletSummary {
   total_wallets: number;
   active_wallets: number;
-  frozen_wallets: number;
+  inactive_wallets: number;
   total_balance: number;
 }
 
@@ -31,14 +44,53 @@ export interface WalletPagination {
   last_page: number;
   per_page: number;
   total: number;
+  from?: number | null;
+  to?: number | null;
 }
 
 export interface WalletResponse {
+  success: boolean;
   data: Wallet[];
+  pagination: WalletPagination;
+  summary?: {
+    wallets: number;
+  };
+}
 
-  meta: WalletPagination;
+export interface WalletSingleResponse {
+  success: boolean;
+  data: Wallet;
+  message?: string;
 }
 
 export interface WalletSummaryResponse {
+  success: boolean;
   data: WalletSummary;
+}
+
+export interface WalletTransaction {
+  id: number;
+  reference?: string | null;
+  type?: string | null;
+  amount?: number | string | null;
+  fee?: number | string | null;
+  total?: number | string | null;
+  currency?: string | null;
+  status?: string | null;
+  description?: string | null;
+  created_at?: string | null;
+  completed_at?: string | null;
+  meta?: Record<string, unknown> | null;
+}
+
+export interface WalletTransactionsResponse {
+  success: boolean;
+  data: WalletTransaction[];
+  pagination?: WalletPagination;
+}
+
+export interface WalletStatementResponse {
+  success: boolean;
+  data: WalletTransaction[];
+  pagination?: WalletPagination;
 }

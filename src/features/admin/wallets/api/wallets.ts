@@ -1,30 +1,39 @@
 import adminApi from "@/lib/admin-api";
 
+import type {
+  WalletResponse,
+  WalletSingleResponse,
+  WalletSummaryResponse,
+  WalletTransactionsResponse,
+  WalletStatementResponse,
+} from "../types/wallet";
+
 export interface WalletFilters {
   page?: number;
   per_page?: number;
   search?: string;
-  status?: string;
+  status?: "active" | "inactive" | "frozen";
   currency?: string;
-  country?: string;
+  is_active?: boolean;
+  min_balance?: number;
+  max_balance?: number;
   sort?: "balance" | "wallet_number" | "currency" | "created_at";
   direction?: "asc" | "desc";
 }
 
 export interface WalletAmountPayload {
   amount: number;
-  narration: string;
+  reason: string;
+  note?: string;
 }
 
 export interface FreezeWalletPayload {
   reason?: string;
 }
 
-/**
- * Wallet List
- * GET /admin/wallets
- */
-export async function getWallets(filters?: WalletFilters) {
+export async function getWallets(
+  filters?: WalletFilters
+): Promise<WalletResponse> {
   const params = Object.fromEntries(
     Object.entries(filters ?? {}).filter(
       ([, value]) =>
@@ -34,133 +43,110 @@ export async function getWallets(filters?: WalletFilters) {
     )
   );
 
-  const { data } = await adminApi.get("/admin/wallets", {
-    params,
-  });
-
-  return data;
-}
-
-/**
- * Wallet Summary
- * GET /admin/wallets/summary
- */
-export async function getWalletSummary() {
-  const { data } = await adminApi.get(
-    "/admin/wallets/summary"
+  const { data } = await adminApi.get<WalletResponse>(
+    "/admin/wallets",
+    { params }
   );
 
   return data;
 }
 
-/**
- * Wallet Details
- * GET /admin/wallets/{wallet}
- */
+export async function getWalletSummary(): Promise<WalletSummaryResponse> {
+  const { data } =
+    await adminApi.get<WalletSummaryResponse>(
+      "/admin/wallets/summary"
+    );
+
+  return data;
+}
+
 export async function getWallet(
   walletId: number | string
-) {
-  const { data } = await adminApi.get(
-    `/admin/wallets/${walletId}`
-  );
+): Promise<WalletSingleResponse> {
+  const { data } =
+    await adminApi.get<WalletSingleResponse>(
+      `/admin/wallets/${walletId}`
+    );
 
   return data;
 }
 
-/**
- * Credit Wallet
- * POST /admin/wallets/{wallet}/credit
- */
 export async function creditWallet(
   walletId: number | string,
   payload: WalletAmountPayload
-) {
-  const { data } = await adminApi.post(
-    `/admin/wallets/${walletId}/credit`,
-    payload
-  );
+): Promise<WalletSingleResponse> {
+  const { data } =
+    await adminApi.post<WalletSingleResponse>(
+      `/admin/wallets/${walletId}/credit`,
+      payload
+    );
 
   return data;
 }
 
-/**
- * Debit Wallet
- * POST /admin/wallets/{wallet}/debit
- */
 export async function debitWallet(
   walletId: number | string,
   payload: WalletAmountPayload
-) {
-  const { data } = await adminApi.post(
-    `/admin/wallets/${walletId}/debit`,
-    payload
-  );
+): Promise<WalletSingleResponse> {
+  const { data } =
+    await adminApi.post<WalletSingleResponse>(
+      `/admin/wallets/${walletId}/debit`,
+      payload
+    );
 
   return data;
 }
 
-/**
- * Freeze Wallet
- * POST /admin/wallets/{wallet}/freeze
- */
 export async function freezeWallet(
   walletId: number | string,
   payload?: FreezeWalletPayload
-) {
-  const { data } = await adminApi.post(
-    `/admin/wallets/${walletId}/freeze`,
-    payload
-  );
+): Promise<WalletSingleResponse> {
+  const { data } =
+    await adminApi.post<WalletSingleResponse>(
+      `/admin/wallets/${walletId}/freeze`,
+      payload
+    );
 
   return data;
 }
 
-/**
- * Unfreeze Wallet
- * POST /admin/wallets/{wallet}/unfreeze
- */
 export async function unfreezeWallet(
   walletId: number | string
-) {
-  const { data } = await adminApi.post(
-    `/admin/wallets/${walletId}/unfreeze`
-  );
+): Promise<WalletSingleResponse> {
+  const { data } =
+    await adminApi.post<WalletSingleResponse>(
+      `/admin/wallets/${walletId}/unfreeze`
+    );
 
   return data;
 }
 
-/**
- * Wallet Statement
- * GET /admin/wallets/{wallet}/statement
- */
 export async function getWalletStatement(
   walletId: number | string,
   page = 1
-) {
-  const { data } = await adminApi.get(
-    `/admin/wallets/${walletId}/statement`,
-    {
-      params: { page },
-    }
-  );
+): Promise<WalletStatementResponse> {
+  const { data } =
+    await adminApi.get<WalletStatementResponse>(
+      `/admin/wallets/${walletId}/statement`,
+      {
+        params: { page },
+      }
+    );
 
   return data;
 }
 
-/**
- * Wallet Transactions
- * GET /admin/wallets/{wallet}/transactions
- */
 export async function getWalletTransactions(
   walletId: number | string,
   page = 1
-) {
-  const { data } = await adminApi.get(
-    `/admin/wallets/${walletId}/transactions`,
-    {
-      params: { page },
-    }
-  );
+): Promise<WalletTransactionsResponse> {
+  const { data } =
+    await adminApi.get<WalletTransactionsResponse>(
+      `/admin/wallets/${walletId}/transactions`,
+      {
+        params: { page },
+      }
+    );
 
   return data;
 }
