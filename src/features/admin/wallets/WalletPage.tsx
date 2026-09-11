@@ -59,7 +59,6 @@ export default function WalletPage() {
 
   return (
     <div className="space-y-8">
-
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">
@@ -98,20 +97,24 @@ export default function WalletPage() {
       />
 
       {/* Pagination */}
-      {walletQuery.data?.meta && (
+      {walletQuery.data?.pagination && (
         <div className="flex items-center justify-between rounded-2xl border bg-white p-5">
-
           <p className="text-sm text-slate-500">
             Showing page{" "}
-            <strong>{walletQuery.data.meta.current_page}</strong>
-            {" "}of{" "}
-            <strong>{walletQuery.data.meta.last_page}</strong>
+            <strong>
+              {walletQuery.data.pagination.current_page}
+            </strong>{" "}
+            of{" "}
+            <strong>
+              {walletQuery.data.pagination.last_page}
+            </strong>
           </p>
 
           <div className="flex gap-3">
-
             <button
-              disabled={walletQuery.data.meta.current_page <= 1}
+              disabled={
+                walletQuery.data.pagination.current_page <= 1
+              }
               onClick={() => setPage((p) => p - 1)}
               className="rounded-xl border px-5 py-2 disabled:opacity-40"
             >
@@ -120,20 +123,17 @@ export default function WalletPage() {
 
             <button
               disabled={
-                walletQuery.data.meta.current_page >=
-                walletQuery.data.meta.last_page
+                walletQuery.data.pagination.current_page >=
+                walletQuery.data.pagination.last_page
               }
               onClick={() => setPage((p) => p + 1)}
               className="rounded-xl border px-5 py-2 disabled:opacity-40"
             >
               Next
             </button>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }
