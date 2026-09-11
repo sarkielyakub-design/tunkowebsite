@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import AdminAuthService from "@/src/services/admin/auth.service";
 
 export default function AdminAuthProvider({
@@ -10,28 +10,35 @@ export default function AdminAuthProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!AdminAuthService.isLoggedIn()) {
-      router.replace("/admin/login");
-      return;
-    }
+    const checkAuth = () => {
+      // Login page does not require authentication
+      if (pathname === "/admin/login") {
+        setLoading(false);
+        return;
+      }
 
-    setLoading(false);
-  }, [router]);
+      // Only check whether a local admin session exists.
+      // Do NOT call /admin/profile here.
+      if (!AdminAuthService.isLoggedIn()) {
+        router.replace("/admin/login");
+        return;
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [pathname, router]);
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
-
-          <p className="text-sm font-medium text-slate-500">
-            Loading admin panel...
-          </p>
-        </div>
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
