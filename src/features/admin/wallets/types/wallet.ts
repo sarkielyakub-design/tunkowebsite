@@ -36,6 +36,7 @@ export interface WalletSummary {
   total_wallets: number;
   active_wallets: number;
   inactive_wallets: number;
+  frozen_wallets: number;
   total_balance: number;
 }
 

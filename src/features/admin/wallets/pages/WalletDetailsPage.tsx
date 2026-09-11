@@ -131,6 +131,7 @@ export default function WalletDetailsPage({
               total_wallets: 1,
               active_wallets: wallet.is_active ? 1 : 0,
               inactive_wallets: wallet.is_active ? 0 : 1,
+              frozen_wallets: wallet.is_frozen ? 1 : 0,
               total_balance: wallet.balance,
             }}
           />
