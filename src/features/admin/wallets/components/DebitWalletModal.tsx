@@ -43,12 +43,17 @@ export default function DebitWalletModal({
       return;
     }
 
+    if (!narration.trim()) {
+      setError("Please enter a narration.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       await debitWallet(walletId, {
         amount: value,
-        narration,
+        reason: narration.trim(),
       });
 
       setAmount("");
@@ -68,11 +73,8 @@ export default function DebitWalletModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
-
         <div className="flex items-center justify-between border-b p-6">
-
           <div>
             <h2 className="text-xl font-bold">
               Debit Wallet
@@ -86,14 +88,17 @@ export default function DebitWalletModal({
             </p>
           </div>
 
-          <button onClick={onClose}>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="rounded-lg p-1 hover:bg-slate-100 disabled:opacity-50"
+          >
             <X size={22} />
           </button>
-
         </div>
 
         <div className="space-y-5 p-6">
-
           {error && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
               {error}
@@ -101,24 +106,23 @@ export default function DebitWalletModal({
           )}
 
           <div>
-
             <label className="mb-2 block font-medium">
               Amount
             </label>
 
             <input
               type="number"
+              min="0"
+              step="0.01"
               value={amount}
-              onChange={(e) =>
-                setAmount(e.target.value)
-              }
-              className="w-full rounded-xl border p-3"
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+              placeholder="Enter amount"
+              disabled={loading}
             />
-
           </div>
 
           <div>
-
             <label className="mb-2 block font-medium">
               Narration
             </label>
@@ -126,39 +130,34 @@ export default function DebitWalletModal({
             <textarea
               rows={4}
               value={narration}
-              onChange={(e) =>
-                setNarration(e.target.value)
-              }
-              className="w-full rounded-xl border p-3"
+              onChange={(e) => setNarration(e.target.value)}
+              className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+              placeholder="Enter debit narration"
+              disabled={loading}
             />
-
           </div>
-
         </div>
 
         <div className="flex justify-end gap-3 border-t p-6">
-
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-xl border px-5 py-3"
+            disabled={loading}
+            className="rounded-xl border px-5 py-3 disabled:opacity-50"
           >
             Cancel
           </button>
 
           <button
+            type="button"
             disabled={loading}
             onClick={submit}
-            className="rounded-xl bg-red-600 px-5 py-3 text-white"
+            className="rounded-xl bg-red-600 px-5 py-3 text-white disabled:opacity-50"
           >
-            {loading
-              ? "Processing..."
-              : "Debit Wallet"}
+            {loading ? "Processing..." : "Debit Wallet"}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
