@@ -1,8 +1,12 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
 import AdminAuthService from "@/src/services/admin/auth.service";
+import { useAuthStore } from "@/src/store/admin/auth-store";
 
 export default function AdminAuthProvider({
   children,
@@ -10,35 +14,75 @@ export default function AdminAuthProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
 
-  const [loading, setLoading] = useState(true);
+  const [checking, setChecking] = useState(true);
+
+  const setSession = useAuthStore((state) => state.setSession);
+  const logout = useAuthStore((state) => state.logout);
 
   useEffect(() => {
-    const checkAuth = () => {
-      // Login page does not require authentication
-      if (pathname === "/admin/login") {
-        setLoading(false);
+    let active = true;
+
+    const verifyAdmin = async () => {
+      const token = AdminAuthService.getToken();
+
+      if (!token) {
+        if (active) {
+          logout();
+          router.replace("/admin/login");
+        }
         return;
       }
 
-      // Only check whether a local admin session exists.
-      // Do NOT call /admin/profile here.
-      if (!AdminAuthService.isLoggedIn()) {
-        router.replace("/admin/login");
-        return;
-      }
+      try {
+        const admin = await AdminAuthService.profile();
 
-      setLoading(false);
+        if (!active) return;
+
+        if (admin.status === false) {
+          AdminAuthService.clearSession();
+          logout();
+          router.replace("/admin/login");
+          return;
+        }
+
+        setSession(token, admin);
+        setChecking(false);
+      } catch (error) {
+        if (!active) return;
+
+        if (
+          axios.isAxiosError(error) &&
+          [401, 403].includes(error.response?.status ?? 0)
+        ) {
+          AdminAuthService.clearSession();
+          logout();
+          router.replace("/admin/login");
+          return;
+        }
+
+        // Do not destroy a valid-looking session because of
+        // a temporary network error or backend server failure.
+        setChecking(false);
+      }
     };
 
-    checkAuth();
-  }, [pathname, router]);
+    verifyAdmin();
 
-  if (loading) {
+    return () => {
+      active = false;
+    };
+  }, [router, setSession, logout]);
+
+  if (checking) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <p className="mt-4 text-sm text-gray-500">
+            Verifying administrator session...
+          </p>
+        </div>
       </div>
     );
   }

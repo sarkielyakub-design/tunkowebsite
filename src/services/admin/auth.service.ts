@@ -1,108 +1,86 @@
+
 import Cookies from "js-cookie";
 import adminApi from "@/lib/admin-api";
+import type { Admin } from "@/src/store/admin/auth-store";
 
 export interface LoginPayload {
   email: string;
   password: string;
 }
 
-export interface AdminLoginResponse {
+interface ApiResponse<T> {
   success: boolean;
+  message: string;
+  data: T;
+}
+
+interface LoginData {
   token: string;
-  admin: {
-    id: number;
-    name: string;
-    email: string;
-    phone?: string;
-    avatar?: string | null;
-    status?: boolean;
-  };
+  token_type: string;
+  admin: Admin;
 }
 
 class AdminAuthService {
-  // ============================================================
-  // LOGIN
-  // ============================================================
-
-  async login(data: LoginPayload): Promise<AdminLoginResponse> {
-    const response = await adminApi.post<AdminLoginResponse>(
+  async login(payload: LoginPayload) {
+    const response = await adminApi.post<ApiResponse<LoginData>>(
       "/admin/login",
-      data
+      payload
     );
 
-    const { token, admin } = response.data;
+    const result = response.data.data;
 
-    if (!token) {
-      throw new Error("Login succeeded but no authentication token was returned.");
+    if (!response.data.success || !result?.token || !result?.admin) {
+      throw new Error(response.data.message || "Invalid login response.");
     }
 
-    Cookies.set("admin_token", token, {
+    Cookies.set("admin_token", result.token, {
       expires: 7,
       secure: window.location.protocol === "https:",
       sameSite: "strict",
       path: "/",
     });
 
-    if (admin?.name) {
-      Cookies.set("admin_name", admin.name, {
-        expires: 7,
-        secure: window.location.protocol === "https:",
-        sameSite: "strict",
-        path: "/",
-      });
-    }
+    Cookies.set("admin_name", JSON.stringify(result.admin), {
+      expires: 7,
+      secure: window.location.protocol === "https:",
+      sameSite: "strict",
+      path: "/",
+    });
 
-    return response.data;
+    return result;
   }
-
-  // ============================================================
-  // LOGOUT
-  // ============================================================
 
   async logout() {
     try {
       await adminApi.post("/admin/logout");
     } finally {
-      Cookies.remove("admin_token", {
-        path: "/",
-      });
-
-      Cookies.remove("admin_name", {
-        path: "/",
-      });
+      this.clearSession();
     }
   }
 
-  // ============================================================
-  // CURRENT ADMIN PROFILE
-  // ============================================================
+  async profile(): Promise<Admin> {
+    const response = await adminApi.get<ApiResponse<Admin>>(
+      "/admin/profile"
+    );
 
-  async profile() {
-    const response = await adminApi.get("/admin/profile");
+    if (!response.data.success || !response.data.data) {
+      throw new Error("Unable to retrieve administrator profile.");
+    }
 
     return response.data.data;
   }
 
-  // ============================================================
-  // LOCAL AUTH CHECK
-  // ============================================================
-
-  isLoggedIn() {
-    return Boolean(Cookies.get("admin_token"));
+  getToken(): string | undefined {
+    return Cookies.get("admin_token");
   }
 
-  // ============================================================
-  // CLEAR SESSION
-  // ============================================================
+  isLoggedIn(): boolean {
+    return Boolean(this.getToken());
+  }
 
-  clearSession() {
-    Cookies.remove("admin_token", {
-      path: "/",
-    });
-
-    Cookies.remove("admin_name", {
-      path: "/",
-    });
+  clearSession(): void {
+    Cookies.remove("admin_token", { path: "/" });
+    Cookies.remove("admin_name", { path: "/" });
   }
 }
 
